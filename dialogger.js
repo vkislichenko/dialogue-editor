@@ -2,22 +2,8 @@ function getURLParameter(name) {
     return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
 }
 
-function onError(e) {
-    console.log('Error', e);
-}
-
 var fs = null;
 var loadOnStart = getURLParameter('load');
-var importOnStart = getURLParameter('import');
-
-addEventListener('app-ready', function(e)
-{
-	// We're running inside app.js
-	fs = require('fs');
-	$('#import').hide();
-	$('#export').hide();
-	$('#export-game').hide();
-});
 
 var graph = new joint.dia.Graph();
 
@@ -26,9 +12,9 @@ var defaultLink = new joint.dia.Link(
 {
 	attrs:
 	{
-		'.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z', },
-		'.link-tools .tool-remove circle, .marker-vertex': { r: 8 },
-	},
+		'.marker-target': { d: 'M 10 0 L 0 5 L 10 10 z' },
+		'.link-tools .tool-remove circle, .marker-vertex': { r: 8 }
+	}
 });
 
 
@@ -57,7 +43,7 @@ var allowableConnections =
 	['dialogue.Branch', 'dialogue.Text'],
 	['dialogue.Branch', 'dialogue.Node'],
 	['dialogue.Branch', 'dialogue.Set'],
-	['dialogue.Branch', 'dialogue.Branch'],
+	['dialogue.Branch', 'dialogue.Branch']
 ];
 
 
@@ -87,25 +73,8 @@ function validateConnection(cellViewS, magnetS, cellViewT, magnetT, end, linkVie
 			break;
 		}
 	}
-	if (!valid)
-		return false;
 
-    //COMENTED UNTIL I FIGURE WHY IT "DANCES" WHEN SNAPPIN
-	//var links = graph.getConnectedLinks(cellViewS.model);
-	//for (var i = 0; i < links.length; i++)
-	//{
-	//	var link = links[i];
-	//	if (link.attributes.source.id === cellViewS.model.id && link.attributes.source.port === magnetS.attributes.port.nodeValue && link.attributes.target.id)
-	//	{
-	//		var targetCell = graph.getCell(link.attributes.target.id);
-	//		if (targetCell.attributes.type !== targetType)
-	//			return false; // We can only connect to multiple targets of the same type
-	//		if (targetCell == cellViewT.model)
-	//			return false; // Already connected
-	//	} 
-	//}
-
-	return true;
+	return valid;
 }
 
 function validateMagnet(cellView, magnet)
@@ -153,10 +122,10 @@ joint.shapes.dialogue.Base = joint.shapes.devs.Model.extend(
 				text: { display: 'none' },
 				'.inPorts circle': { magnet: 'passive' },
 				'.outPorts circle': { magnet: true, },
-			},
+			}
 		},
 		joint.shapes.devs.Model.prototype.defaults
-	),
+	)
 });
 //#endregion
 
@@ -169,9 +138,8 @@ joint.shapes.dialogue.BaseView = joint.shapes.devs.ModelView.extend(
 		'<span class="label"></span>',
 		'<button class="delete">x</button>',
         '<input type="actor" class="actor" placeholder="Actor" />',
-		//'<input type="text" class="name" placeholder="Text" />',
-        '<p> <textarea type="text" class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
-        '</div>',
+        '<p> <textarea class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
+        '</div>'
 	].join(''),
 
 	initialize: function()
@@ -270,8 +238,8 @@ joint.shapes.dialogue.ChoiceView = joint.shapes.devs.ModelView.extend(
 		'<span class="label"> </span>',
 		'<button class="delete">x</button>',
         '<input type="choice" class="title" placeholder="Title" />',
-        '<p> <textarea type="text" class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
-		'</div>',
+        '<p> <textarea class="name" rows="4" cols="27" placeholder="Speech"></textarea></p>',
+		'</div>'
         		
 	].join(''),
 
@@ -317,15 +285,16 @@ joint.shapes.dialogue.ChoiceView = joint.shapes.devs.ModelView.extend(
         // Set the position and dimension of the box so that it covers the JointJS element.
         var bbox = this.model.getBBox();
         // Example of updating the HTML with a data stored in the cell model.
-        var nameField = this.$box.find('textarea.name');
-        if (!nameField.is(':focus'))
-            nameField.val(this.model.get('name'));
+        var nameField1 = this.$box.find('textarea.name');
+        if (!nameField1.is(':focus')) {
+            nameField1.val(this.model.get('name'));
+        }
 
         // Example of updating the HTML with a data stored in the cell model.
-        var nameField = this.$box.find('input.title');
-        if (!nameField.is(':focus'))
-            nameField.val(this.model.get('title'));
-
+        var nameField2 = this.$box.find('input.title');
+        if (!nameField2.is(':focus')) {
+            nameField2.val(this.model.get('title'));
+        }
 
         var label = this.$box.find('.label');
         var type = this.model.get('type').slice('dialogue.'.length);
@@ -338,7 +307,7 @@ joint.shapes.dialogue.ChoiceView = joint.shapes.devs.ModelView.extend(
 
     removeBox: function (evt) {
         this.$box.remove();
-    },
+    }
 });
 
 //#endregion
@@ -355,10 +324,10 @@ joint.shapes.dialogue.Node = joint.shapes.devs.Model.extend(
 			attrs:
 			{
 				'.outPorts circle': { unlimitedConnections: ['dialogue.Choice'], }
-			},
+			}
 		},
 		joint.shapes.dialogue.Base.prototype.defaults
-	),
+	)
 });
 
 joint.shapes.dialogue.NodeView = joint.shapes.dialogue.BaseView;
@@ -380,10 +349,10 @@ joint.shapes.dialogue.Text = joint.shapes.devs.Model.extend(
 			{
 			  
 				'.outPorts circle': { unlimitedConnections: ['dialogue.Choice'], }
-			},
+			}
 		},
 		joint.shapes.dialogue.Base.prototype.defaults
-	),
+	)
 });
 
 joint.shapes.dialogue.TextView = joint.shapes.dialogue.BaseView;
@@ -401,10 +370,10 @@ joint.shapes.dialogue.Choice = joint.shapes.devs.Model.extend(
 			inPorts: ['input'],
 			outPorts: ['output'],
 			title: '',
-            name: '',
+            name: ''
 		},
 		joint.shapes.dialogue.Base.prototype.defaults
-	),
+	)
 });
 
 joint.shapes.dialogue.ChoiceView = joint.shapes.dialogue.ChoiceView;
@@ -418,13 +387,13 @@ joint.shapes.dialogue.Branch = joint.shapes.devs.Model.extend(
 	(
 		{
 			type: 'dialogue.Branch',
-			size: { width: 200, height: 100, },
+			size: { width: 200, height: 100 },
 			inPorts: ['input'],
 			outPorts: ['output0'],
-			values: [],
+			values: []
 		},
 		joint.shapes.dialogue.Base.prototype.defaults
-	),
+	)
 });
 joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 {
@@ -437,7 +406,7 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 		'<button class="remove">-</button>',
 		'<input type="text" class="name" placeholder="Variable" />',
 		'<input type="text" value="Default" readonly/>',
-		'</div>',
+		'</div>'
 	].join(''),
 
 	initialize: function()
@@ -482,14 +451,14 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 		for (var i = valueFields.length; i < values.length; i++)
 		{
 			// Prevent paper from handling pointerdown.
-			var field = $('<input type="text" class="value" />');
-			field.attr('placeholder', 'Value ' + (i + 1).toString());
-			field.attr('index', i);
-			this.$box.append(field);
-			field.on('mousedown click', function(evt) { evt.stopPropagation(); });
+			var field1 = $('<input type="text" class="value" />');
+			field1.attr('placeholder', 'Value ' + (i + 1).toString());
+			field1.attr('index', i);
+			this.$box.append(field1);
+			field1.on('mousedown click', function(evt) { evt.stopPropagation(); });
 
 			// This is an example of reacting on the input change and storing the input data in the cell model.
-			field.on('change', _.bind(function(evt)
+			field1.on('change', _.bind(function(evt)
 			{
 				var values = this.model.get('values').slice(0);
 				values[$(evt.target).attr('index')] = $(evt.target).val();
@@ -498,16 +467,16 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 		}
 
 		// Remove value fields if necessary
-		for (var i = values.length; i < valueFields.length; i++)
-			$(valueFields[i]).remove();
+		for (var j = values.length; j < valueFields.length; j++)
+			$(valueFields[j]).remove();
 
 		// Update value fields
 		valueFields = this.$box.find('input.value');
-		for (var i = 0; i < valueFields.length; i++)
+		for (var k = 0; k < valueFields.length; k++)
 		{
-			var field = $(valueFields[i]);
-			if (!field.is(':focus'))
-				field.val(values[i]);
+			var field2 = $(valueFields[k]);
+			if (!field2.is(':focus'))
+				field2.val(values[k]);
 		}
 	},
 
@@ -516,7 +485,7 @@ joint.shapes.dialogue.BranchView = joint.shapes.dialogue.BaseView.extend(
 		var textField = this.$box.find('input.name');
 		var height = textField.outerHeight(true);
 		this.model.set('size', { width: 200, height: 100 + Math.max(0, (this.model.get('outPorts').length - 1) * height) });
-	},
+	}
 });
 
 //#endregion
@@ -530,11 +499,11 @@ joint.shapes.dialogue.Set = joint.shapes.devs.Model.extend(
 		    type: 'dialogue.Set',
 		    inPorts: ['input'],
 		    outPorts: ['output'],
-		    size: { width: 200, height: 100, },
-		    value: '',
+		    size: { width: 200, height: 100 },
+		    value: ''
 		},
 		joint.shapes.dialogue.Base.prototype.defaults
-	),
+	)
 });
 
 joint.shapes.dialogue.SetView = joint.shapes.dialogue.BaseView.extend(
@@ -546,7 +515,7 @@ joint.shapes.dialogue.SetView = joint.shapes.dialogue.BaseView.extend(
 		'<button class="delete">x</button>',
 		'<input type="text" class="name" placeholder="Variable" />',
 		'<input type="text" class="value" placeholder="Value" />',
-		'</div>',
+		'</div>'
 	].join(''),
 
 	initialize: function()
@@ -564,7 +533,7 @@ joint.shapes.dialogue.SetView = joint.shapes.dialogue.BaseView.extend(
 		var field = this.$box.find('input.value');
 		if (!field.is(':focus'))
 			field.val(this.model.get('value'));
-	},
+	}
 });
 
 //#endregion 
@@ -577,63 +546,63 @@ function gameData()
 	var nodes = [];
 	for (var i = 0; i < cells.length; i++)
 	{
-		var cell = cells[i];
-		if (cell.type != 'link')
+		var cell1 = cells[i];
+		if (cell1.type != 'link')
 		{
 			var node =
 			{
-				type: cell.type.slice('dialogue.'.length),
-				id: cell.id,
-				actor: cell.actor,
-                title: cell.title,
+				type: cell1.type.slice('dialogue.'.length),
+				id: cell1.id,
+				actor: cell1.actor,
+                title: cell1.title
 			};
 			if (node.type == 'Branch')
 			{
-				node.variable = cell.name;
+				node.variable = cell1.name;
 				node.branches = {};
-				for (var j = 0; j < cell.values.length; j++)
+				for (var j = 0; j < cell1.values.length; j++)
 				{
-					var branch = cell.values[j];
+					var branch = cell1.values[j];
 					node.branches[branch] = null;
 				}
 			}
 			else if (node.type == 'Set')
 			{
-				node.variable = cell.name;
-				node.value = cell.value;
+				node.variable = cell1.name;
+				node.value = cell1.value;
 				node.next = null;
                 
 			}
 
 			else if (node.type == 'Choice') {
-			    node.name = cell.name;
-			    node.title = cell.title;
+			    node.name = cell1.name;
+			    node.title = cell1.title;
 			    node.next = null;
 
 			}
 			else
 			{
-			    node.actor = cell.actor;
-				node.name = cell.name;
+			    node.actor = cell1.actor;
+				node.name = cell1.name;
 				node.next = null;
 			}
 			nodes.push(node);
-			nodesByID[cell.id] = node;
-			cellsByID[cell.id] = cell;
+			nodesByID[cell1.id] = node;
+			cellsByID[cell1.id] = cell1;
 		}
 	}
-	for (var i = 0; i < cells.length; i++)
+	for (var k = 0; k < cells.length; k++)
 	{
-		var cell = cells[i];
-		if (cell.type == 'link')
+		var cell2 = cells[k];
+		if (cell2.type == 'link')
 		{
-			var source = nodesByID[cell.source.id];
-			var target = cell.target ? nodesByID[cell.target.id] : null;
+			var source = nodesByID[cell2.source.id];
+			var target = cell2.target ? nodesByID[cell2.target.id] : null;
 			if (source)
 			{
 				if (source.type == 'Branch')
 				{
-					var portNumber = parseInt(cell.source.port.slice('output'.length));
+					var portNumber = parseInt(cell2.source.port.slice('output'.length));
 					var value;
 					if (portNumber == 0)
 						value = '_default';
@@ -653,8 +622,9 @@ function gameData()
 					}
 					source.choices.push(target.id);
 				}
-				else
-					source.next = target ? target.id : null;
+				else {
+                    source.next = target ? target.id : null;
+                }
 			}
 		}
 	}
@@ -667,8 +637,6 @@ function gameData()
 var filename = null;
 var defaultFilename = 'dialogue.json';
 
-
-
 function flash(text)
 {
 	var $flash = $('#flash');
@@ -679,6 +647,7 @@ function flash(text)
 	$flash.fadeOut({ duration: 1500 });
 }
 
+var bodyTag = $('body');
 function offerDownload(name, data)
 {
 	var a = $('<a>');
@@ -686,7 +655,7 @@ function offerDownload(name, data)
 	a.attr('href', 'data:application/json,' + encodeURIComponent(JSON.stringify(data)));
 	a.attr('target', '_blank');
 	a.hide();
-	$('body').append(a);
+	bodyTag.append(a);
 	a[0].click();
 	a.remove();
 }
@@ -698,7 +667,7 @@ function promptFilename(callback)
 		filename = null;
 		window.frame.openDialog(
 		{
-			type: 'save',
+			type: 'save'
 		}, function(err, files)
 		{
 			if (!err && files.length == 1)
@@ -733,6 +702,7 @@ function doSave()
 {
 	if (filename)
 	{
+	    console.log(fs);
 		if (fs)
 		{
 			fs.writeFileSync(filename, JSON.stringify(graph), 'utf8');
@@ -750,12 +720,13 @@ function doSave()
 
 function load()
 {
+
     if (fs) {
         /// AUTOLOAD
         window.frame.openDialog(
 		{
 		    type: 'open',
-		    multiSelect: false,
+		    multiSelect: false
 		}, function (err, files) {
 		    if (!err && files.length == 1) {
 		        graph.clear();
@@ -800,15 +771,17 @@ function importFile()
 		$('#file').click();
 }
 
+var containerElement = $('#container');
+
 function add(constructor)
 {
 	return function()
 	{
 		var position = $('#cmroot').position();
-		var container = $('#container')[0];
+		var container = containerElement[0];
 		var element = new constructor(
 		{
-			position: { x: position.left + container.scrollLeft, y: position.top + container.scrollTop },
+			position: { x: position.left + container.scrollLeft, y: position.top + container.scrollTop }
 		});
 		graph.addCells([element]);
 	};
@@ -844,7 +817,7 @@ paper.on('blank:pointerdown', function(e, x, y)
 	panning = true;
 	mousePosition.x = e.pageX;
 	mousePosition.y = e.pageY;
-	$('body').css('cursor', 'move');
+	bodyTag.css('cursor', 'move');
 	applyTextFields();
 });
 paper.on('cell:pointerdown', function(e, x, y)
@@ -852,7 +825,7 @@ paper.on('cell:pointerdown', function(e, x, y)
 	applyTextFields();
 });
 
-$('#container').mousemove(function(e)
+containerElement.mousemove(function(e)
 {
 	if (panning)
 	{
@@ -864,10 +837,10 @@ $('#container').mousemove(function(e)
 	}
 });
 
-$('#container').mouseup(function (e)
+containerElement.mouseup(function (e)
 {
 	panning = false;
-	$('body').css('cursor', 'default');
+	bodyTag.css('cursor', 'default');
 });
 
 function handleFiles(files)
@@ -887,25 +860,25 @@ $('#file').on('change', function()
 	handleFiles(this.files);
 });
 
-$('body').on('dragenter', function(e)
+bodyTag.on('dragenter', function(e)
 {
 	e.stopPropagation();
 	e.preventDefault();
 });
 
-$('body').on('dragexit', function(e)
+bodyTag.on('dragexit', function(e)
 {
 	e.stopPropagation();
 	e.preventDefault();
 });
 
-$('body').on('dragover', function(e)
+bodyTag.on('dragover', function(e)
 {
 	e.stopPropagation();
 	e.preventDefault();
 });
 
-$('body').on('drop', function(e)
+bodyTag.on('drop', function(e)
 {
 	e.stopPropagation();
 	e.preventDefault();
@@ -1022,5 +995,4 @@ if (loadOnStart != null) {
     graph.clear();
     filename = loadOnStart;
     graph.fromJSON(JSON.parse(localStorage[loadOnStart]));
-    //graph.fromJSON(JSON.parse(fs.readFileSync(filename, 'utf8')));
 }
