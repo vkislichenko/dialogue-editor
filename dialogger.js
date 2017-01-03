@@ -67,16 +67,14 @@ function validateConnection(cellViewS, magnetS, cellViewT, magnetT) {
 
 	var sourceType = cellViewS.model.attributes.type;
 	var targetType = cellViewT.model.attributes.type;
-	var valid = false;
 	for (var i = 0; i < allowableConnections.length; i++) {
 		var rule = allowableConnections[i];
 		if (sourceType == rule[0] && targetType == rule[1]) {
-			valid = true;
-			break;
+			return true;
 		}
 	}
 
-	return valid;
+	return false;
 }
 
 function validateMagnet(cellView, magnet) {
